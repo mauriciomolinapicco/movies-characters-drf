@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies and Characters API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .container {
+            margin-bottom: 30px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.0.0/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    <h1>Movies and Characters</h1>
+    
+    <div class="container">
+        <h2>Movies</h2>
+        <button onclick="getMovies()">Get All Movies</button>
+        <table id="moviesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Year</th>
+                    <th>Genre</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        
+        <h3>Add Movie</h3>
+        <div>
+            <input type="text" id="movieTitle" placeholder="Title">
+            <input type="text" id="movieGenre" placeholder="Genre">
+            <input type="number" id="movieYear" placeholder="Year">
+            <button onclick="addMovie()">Add Movie</button>
+        </div>
+    </div>
+
+    <br><hr><br>
+    <div class="container">
+        <h2>Characters</h2>
+        <button onclick="getCharacters()">Get All Characters</button>
+        <table id="charactersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Actor</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        
+        <h3>Add Character</h3>
+        <div>
+            <input type="text" id="characterName" placeholder="Name">
+            <input type="text" id="characterActor" placeholder="Actor">
+            <input type="text" id="characterRole" placeholder="Role">
+            <input type="number" id="characterMovieId" placeholder="Movie ID">
+            <button onclick="addCharacter()">Add Character</button>
+        </div>
+    </div>
+
+    <script>
+        const apiBase = "http://127.0.0.1:8000";
+
+        // Get all movies
+        async function getMovies() {
+            const response = await fetch(`${apiBase}`);
+            const data = await response.json();
+            const moviesTableBody = document.querySelector("#moviesTable tbody");
+            moviesTableBody.innerHTML = "";
+            data.forEach(movie => {
+                moviesTableBody.innerHTML += `
+                    <tr>
+                        <td>${movie.id}</td>
+                        <td>${movie.title}</td>
+                        <td>${movie.year}</td>
+                        <td>${movie.genre}</td>
+                        <td>
+                            <button onclick="deleteMovie(${movie.id})">Delete</button>
+                            <button onclick="updateMovie(${movie.id})">Update</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        // Add a new movie
+        async function addMovie() {
+            const title = document.getElementById("movieTitle").value;
+            const genre = document.getElementById("movieGenre").value;
+            const year = document.getElementById("movieYear").value;
+            
+            const response = await fetch(`${apiBase}/addMovie`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ title, genre, year })
+            });
+            if (response.ok) {
+                alert("Movie added successfully!");
+                getMovies();
+            } else {
+                alert("Error adding movie!");
+            }
+        }
+
+        // Delete a movie
+        async function deleteMovie(movieId) {
+            const response = await fetch(`${apiBase}/movies/${movieId}/`, {
+                method: "DELETE"
+            });
+            if (response.ok) {
+                alert("Movie deleted successfully!");
+                getMovies();
+            } else {
+                alert("Error deleting movie!");
+            }
+        }
+
+        // Update a movie (demo with a prompt)
+        async function updateMovie(movieId) {
+            const title = prompt("Enter new title:");
+            const response = await fetch(`${apiBase}/movies/${movieId}/`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ title })
+            });
+            if (response.ok) {
+                alert("Movie updated successfully!");
+                getMovies();
+            } else {
+                alert("Error updating movie!");
+            }
+        }
+
+        // Get all characters
+        async function getCharacters() {
+            const response = await fetch(`${apiBase}/getCharacters`);
+            const data = await response.json();
+            const charactersTableBody = document.querySelector("#charactersTable tbody");
+            charactersTableBody.innerHTML = "";
+            data.forEach(character => {
+                charactersTableBody.innerHTML += `
+                    <tr>
+                        <td>${character.id}</td>
+                        <td>${character.name}</td>
+                        <td>${character.role}</td>
+                        <td>${character.actor}</td>
+                        <td>
+                            <button onclick="deleteCharacter(${character.id})">Delete</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        // Add a new character
+        async function addCharacter() {
+            const name = document.getElementById("characterName").value;
+            const actor = document.getElementById("characterActor").value;
+            const role = document.getElementById("characterRole").value;
+            const movieId = document.getElementById("characterMovieId").value;
+            
+            const response = await fetch(`${apiBase}/addCharacter/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name, actor, role, movie: movieId })
+            });
+            if (response.ok) {
+                alert("Character added successfully!");
+                getCharacters();
+            } else {
+                alert("Error adding character!");
+            }
+        }
+
+        // Delete a character
+        async function deleteCharacter(characterId) {
+            const response = await fetch(`${apiBase}/characters/${characterId}/`, {
+                method: "DELETE"
+            });
+            if (response.ok) {
+                alert("Character deleted successfully!");
+                getCharacters();
+            } else {
+                alert("Error deleting character!");
+            }
+        }
+    </script>
+</body>
+</html>
