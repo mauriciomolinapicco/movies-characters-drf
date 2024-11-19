@@ -9,7 +9,7 @@ urlpatterns = [
     path('addCharacter', views.addCharacter),
 
     path('updateMovie/<int:pk>', views.updateMovie),
-    path('updateCharacter/<int:pk>', views.updateMovie),
+    path('updateCharacter/<int:pk>', views.updateCharacter),
 
     path('deleteMovie/<int:pk>', views.deleteMovie),
     path('deleteCharacter/<int:pk>', views.deleteCharacter)

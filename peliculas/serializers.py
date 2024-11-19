@@ -8,6 +8,7 @@ class MovieSerializer(serializers.ModelSerializer):
 
 
 class CharacterSerializer(serializers.ModelSerializer):
+    movie_title = serializers.CharField(source="movie.title", read_only=True)
     class Meta:
         model = Character
-        fields = '__all__'
+        fields = ['id', 'name', 'actor', 'role', 'movie', 'movie_title']  # Incluye el campo extra
