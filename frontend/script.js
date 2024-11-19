@@ -54,7 +54,9 @@ function ocultarPersonajes() {
 
 // Obtener todas las películas
 async function getMovies() {
-    const response = await fetch(`${apiBase}`);
+    const response = await fetch(`${apiBase}`, {
+        headers: createHeaders()
+    });
     const data = await response.json();
     const moviesTableBody = document.querySelector("#moviesTable tbody");
     moviesTableBody.innerHTML = "";
@@ -81,9 +83,7 @@ async function addMovie() {
     
     const response = await fetch(`${apiBase}/addMovie`, {
         method: 'POST',
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: createHeaders(),
         body: JSON.stringify({ title, genre, year })
     });
     if (response.ok) {
@@ -117,9 +117,7 @@ async function updateMovie() {
 
     const response = await fetch(`${apiBase}/updateMovie/${id}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: createHeaders(),
         body: JSON.stringify(body)
     });
     if (response.ok) {
@@ -139,7 +137,8 @@ function cancelUpdate() {
 // Eliminar película
 async function deleteMovie(movieId) {
     const response = await fetch(`${apiBase}/deleteMovie/${movieId}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: createHeaders()
     });
     if (response.ok) {
         alert("¡Película eliminada con éxito!");
@@ -156,7 +155,9 @@ async function deleteMovie(movieId) {
 
 // Get all characters
 async function getCharacters() {
-    const response = await fetch(`${apiBase}/getCharacters`);
+    const response = await fetch(`${apiBase}/getCharacters`, {
+        headers: createHeaders()
+    });
     const data = await response.json();
     const charactersTableBody = document.querySelector("#charactersTable tbody");
     charactersTableBody.innerHTML = "";
@@ -185,9 +186,7 @@ async function addCharacter() {
     
     const response = await fetch(`${apiBase}/addCharacter`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: createHeaders(),
         body: JSON.stringify({ name, actor, role, movie: movieId })
     });
     if (response.ok) {
@@ -201,7 +200,8 @@ async function addCharacter() {
 // Delete a character
 async function deleteCharacter(characterId) {
     const response = await fetch(`${apiBase}/deleteCharacter/${characterId}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: createHeaders()
     });
     if (response.ok) {
         alert("Character deleted successfully!");
@@ -248,9 +248,7 @@ async function updateCharacter() {
 
     const response = await fetch(`${apiBase}/updateCharacter/${id}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers:createHeaders(),
         body: JSON.stringify(updatedFields),
     });
 

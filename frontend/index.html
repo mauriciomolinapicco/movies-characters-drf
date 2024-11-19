@@ -4,36 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TP Integrador</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .container {
-            margin-bottom: 30px;
-        }
-        input, button {
-            padding: 10px;
-            margin: 5px;
-        }
-    </style>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.0.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Peliculas y personajes</h1>
+    <h1 id="titulo">Películas y Personajes</h1>
     
     <div class="container">
         <h2>Películas</h2>
@@ -52,9 +26,9 @@
             </thead>
             <tbody></tbody>
         </table>
-        
-        <div id="updateFormContainer" style="display: none;">
-            <h3>Actualizar película</h3>
+
+        <div id="updateFormContainer">
+            <h3>Actualizar Película</h3>
             <form id="updateForm">
                 <input type="hidden" id="updateMovieId">
                 <input type="text" id="updateMovieTitle" placeholder="Nuevo título">
@@ -65,22 +39,22 @@
             </form>
         </div>
 
-        <h3>Añadir película</h3>
+        <h3>Añadir Película</h3>
         <div>
             <input type="text" id="movieTitle" placeholder="Título">
             <input type="text" id="movieGenre" placeholder="Género">
             <input type="number" id="movieYear" placeholder="Año">
-            <button onclick="addMovie()">Añadir película</button>
+            <button onclick="addMovie()">Añadir Película</button>
         </div>
-
     </div>
 
+    <hr>
 
-    <br><hr><br>
     <div class="container">
-        <h2>Characters</h2>
+        <h2>Personajes</h2>
         <button onclick="getCharacters()">Ver personajes</button>
         <button onclick="ocultarPersonajes()">Ocultar</button>
+
         <table id="charactersTable">
             <thead>
                 <tr>
@@ -94,7 +68,8 @@
             </thead>
             <tbody></tbody>
         </table>
-        <div id="updateCharacterForm" style="display: none;">
+
+        <div id="updateCharacterForm">
             <h3>Actualizar Personaje</h3>
             <input type="hidden" id="updateCharacterId">
             <input type="text" id="updateCharacterName" placeholder="Nombre">
@@ -105,13 +80,13 @@
             <button onclick="cancelUpdateCharacter()">Cancelar</button>
         </div>
 
-        <h3>Añadir personaje</h3>
+        <h3>Añadir Personaje</h3>
         <div>
             <input type="text" id="characterName" placeholder="Nombre">
             <input type="text" id="characterActor" placeholder="Actor">
             <input type="text" id="characterRole" placeholder="Rol">
             <input type="number" id="characterMovieId" placeholder="ID de la pelicula">
-            <button onclick="addCharacter()">Añadir personaje</button>
+            <button onclick="addCharacter()">Añadir Personaje</button>
         </div>
     </div>
 

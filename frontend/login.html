@@ -6,22 +6,29 @@
     <title>Login y Logout</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            color: #ffffff;
         }
 
         .container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            width: 320px;
             text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
         }
 
         input[type="text"],
@@ -29,123 +36,142 @@
         button {
             width: 100%;
             margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
             font-size: 16px;
         }
 
+        input[type="text"],
+        input[type="password"] {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            outline: none;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: #d1d1d1;
+        }
+
         button {
-            background-color: #4CAF50;
+            background: #4caf50;
             color: white;
             cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
         }
 
         button:hover {
-            background-color: #45a049;
+            background: #45a049;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
         }
 
         .message {
             margin-top: 20px;
             font-size: 14px;
-            color: red;
+            color: #ff6161;
         }
 
         .hidden {
             display: none;
+        }
+
+        /* Adaptable a pantallas pequeñas */
+        @media (max-width: 400px) {
+            .container {
+                width: 90%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container" id="loginContainer">
         <h2>Login</h2>
-        <input type="text" id="username" placeholder="Username" />
-        <input type="password" id="password" placeholder="Password" />
-        <button onclick="login()">Login</button>
+        <input type="text" id="username" placeholder="Usuario" />
+        <input type="password" id="password" placeholder="Contraseña" />
+        <button onclick="login()">Iniciar Sesión</button>
         <p class="message hidden" id="loginMessage"></p>
     </div>
 
     <div class="container hidden" id="logoutContainer">
-        <h2>Bienvenido!</h2>
-        <button><a href="index.html">Ir a la pagina principal</a></button>
-        <button onclick="logout()">Logout</button>
+        <h2>¡Bienvenido!</h2>
+        <button><a href="index.html">Ir a la página principal</a></button>
+        <button onclick="logout()">Cerrar Sesión</button>
         <p class="message hidden" id="logoutMessage"></p>
     </div>
 
     <script>
-        // Guarda el token globalmente (en una aplicación real, usa localStorage o sessionStorage)
         let authToken = null;
 
         function login() {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const loginMessage = document.getElementById('loginMessage');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginMessage = document.getElementById('loginMessage');
 
-        fetch('http://127.0.0.1:8000/api/login/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.token) {
-                // Guardar el token en Local Storage o Session Storage
-                localStorage.setItem('authToken', data.token); // O sessionStorage.setItem('authToken', data.token);
-                
-                // Cambiar a la vista de logout
+            fetch('http://127.0.0.1:8000/api/login/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    localStorage.setItem('authToken', data.token);
+                    document.getElementById('loginContainer').classList.add('hidden');
+                    document.getElementById('logoutContainer').classList.remove('hidden');
+                    loginMessage.classList.add('hidden');
+                } else {
+                    loginMessage.textContent = data.error || 'Error en el inicio de sesión';
+                    loginMessage.classList.remove('hidden');
+                }
+            })
+            .catch(() => {
+                loginMessage.textContent = 'Error al conectar con el servidor.';
+                loginMessage.classList.remove('hidden');
+            });
+        }
+
+        function logout() {
+            const logoutMessage = document.getElementById('logoutMessage');
+            const token = localStorage.getItem('authToken');
+
+            fetch('/api/logout/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}`
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    localStorage.removeItem('authToken');
+                    document.getElementById('logoutContainer').classList.add('hidden');
+                    document.getElementById('loginContainer').classList.remove('hidden');
+                    logoutMessage.classList.add('hidden');
+                } else {
+                    logoutMessage.textContent = 'Error al cerrar sesión.';
+                    logoutMessage.classList.remove('hidden');
+                }
+            })
+            .catch(() => {
+                logoutMessage.textContent = 'Error al conectar con el servidor.';
+                logoutMessage.classList.remove('hidden');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('authToken');
+            if (token) {
                 document.getElementById('loginContainer').classList.add('hidden');
                 document.getElementById('logoutContainer').classList.remove('hidden');
-                loginMessage.classList.add('hidden');
-            } else {
-                loginMessage.textContent = data.error || 'Login failed';
-                loginMessage.classList.remove('hidden');
             }
-        })
-        .catch(() => {
-            loginMessage.textContent = 'Error connecting to server.';
-            loginMessage.classList.remove('hidden');
         });
-    }
-
-    function logout() {
-        const logoutMessage = document.getElementById('logoutMessage');
-        const token = localStorage.getItem('authToken'); // O sessionStorage.getItem('authToken');
-
-        fetch('/api/logout/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${token}`
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                // Eliminar el token del almacenamiento
-                localStorage.removeItem('authToken'); // O sessionStorage.removeItem('authToken');
-                
-                // Cambiar a la vista de login
-                document.getElementById('logoutContainer').classList.add('hidden');
-                document.getElementById('loginContainer').classList.remove('hidden');
-                logoutMessage.classList.add('hidden');
-            } else {
-                logoutMessage.textContent = 'Logout failed.';
-                logoutMessage.classList.remove('hidden');
-            }
-        })
-        .catch(() => {
-            logoutMessage.textContent = 'Error connecting to server.';
-            logoutMessage.classList.remove('hidden');
-        });
-    }
-
-    // Al cargar la página, verifica si hay un token
-    document.addEventListener('DOMContentLoaded', () => {
-        const token = localStorage.getItem('authToken'); // O sessionStorage.getItem('authToken');
-        if (token) {
-            document.getElementById('loginContainer').classList.add('hidden');
-            document.getElementById('logoutContainer').classList.remove('hidden');
-        }
-    });
     </script>
 </body>
 </html>
