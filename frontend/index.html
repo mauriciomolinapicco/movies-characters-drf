@@ -9,6 +9,10 @@
 <body>
     <h1 id="titulo">Películas y Personajes</h1>
     
+    <div class="logoutButton">
+        <button id="logout" onclick="logout()">Logout</button>
+    </div>
+
     <div class="container">
         <h2>Películas</h2>
         <button onclick="getMovies()">Ver películas</button>
@@ -25,7 +29,7 @@
                 </tr>
             </thead>
             <tbody></tbody>
-        </table>
+        </table> 
 
         <div id="updateFormContainer">
             <h3>Actualizar Película</h3>
@@ -47,8 +51,6 @@
             <button onclick="addMovie()">Añadir Película</button>
         </div>
     </div>
-
-    <hr>
 
     <div class="container">
         <h2>Personajes</h2>

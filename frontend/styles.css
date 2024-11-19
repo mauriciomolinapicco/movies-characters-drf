@@ -13,6 +13,16 @@ body {
     margin: 0;
 }
 
+.logoutButton {
+    display: flex;
+    justify-content: center;  /* Centra horizontalmente */
+    align-items: center;      /* Centra verticalmente */
+}
+
+#logout {
+    background-color: red;
+}
+
 #titulo {
     color: white
 }

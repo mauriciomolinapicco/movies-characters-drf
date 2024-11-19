@@ -260,3 +260,29 @@ async function updateCharacter() {
         alert("Error al actualizar el personaje.");
     }
 }
+
+function logout() {
+    const token = localStorage.getItem('authToken');
+    
+    fetch('http://127.0.0.1:8000/api/logout/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert('Logout exitoso');
+            localStorage.removeItem('authToken');
+            // Redirigir o actualizar la interfaz
+            window.location.reload();
+        } else {
+            alert('Error al hacer logout');
+        }
+    })
+    .catch(() => {
+        alert('Error al conectar con el servidor');
+    });
+}
