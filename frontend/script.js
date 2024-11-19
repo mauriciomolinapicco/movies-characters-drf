@@ -1,3 +1,44 @@
+// Verificar si el usuario está logueado
+const token = localStorage.getItem('authToken'); // Usa sessionStorage si prefieres
+
+//creo los encabezados para las request
+function createHeaders() {
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Token ${token}`
+    };
+}
+
+
+// Redirigir a login si no hay token
+if (!token) {
+    window.location.href = '/trabajopractico/frontend/login.html';
+} else {
+    // Validar el token con el servidor
+    fetch('http://127.0.0.1:8000/api/validate-token/', { // Asegúrate de usar la URL completa del endpoint
+        method: 'GET',
+        headers: { 
+            'Authorization': `Token ${token}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            // Token inválido o caducado, redirigir a login
+            localStorage.removeItem('authToken'); // Limpia el token almacenado
+            window.location.href = '/trabajopractico/frontend/login.html';
+        }
+    })
+    .catch(() => {
+        // Error de conexión, redirigir a login como precaución
+        localStorage.removeItem('authToken'); // Limpia el token almacenado
+        window.location.href = '/trabajopractico/frontend/login.html';
+    });
+}
+
+
+
+
+//Funcionalidad de la pagina
 const apiBase = "http://127.0.0.1:8000";
 
 

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login y Logout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            text-align: center;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 14px;
+            color: red;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="loginContainer">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username" />
+        <input type="password" id="password" placeholder="Password" />
+        <button onclick="login()">Login</button>
+        <p class="message hidden" id="loginMessage"></p>
+    </div>
+
+    <div class="container hidden" id="logoutContainer">
+        <h2>Bienvenido!</h2>
+        <button><a href="index.html">Ir a la pagina principal</a></button>
+        <button onclick="logout()">Logout</button>
+        <p class="message hidden" id="logoutMessage"></p>
+    </div>
+
+    <script>
+        // Guarda el token globalmente (en una aplicación real, usa localStorage o sessionStorage)
+        let authToken = null;
+
+        function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const loginMessage = document.getElementById('loginMessage');
+
+        fetch('http://127.0.0.1:8000/api/login/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.token) {
+                // Guardar el token en Local Storage o Session Storage
+                localStorage.setItem('authToken', data.token); // O sessionStorage.setItem('authToken', data.token);
+                
+                // Cambiar a la vista de logout
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('logoutContainer').classList.remove('hidden');
+                loginMessage.classList.add('hidden');
+            } else {
+                loginMessage.textContent = data.error || 'Login failed';
+                loginMessage.classList.remove('hidden');
+            }
+        })
+        .catch(() => {
+            loginMessage.textContent = 'Error connecting to server.';
+            loginMessage.classList.remove('hidden');
+        });
+    }
+
+    function logout() {
+        const logoutMessage = document.getElementById('logoutMessage');
+        const token = localStorage.getItem('authToken'); // O sessionStorage.getItem('authToken');
+
+        fetch('/api/logout/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${token}`
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Eliminar el token del almacenamiento
+                localStorage.removeItem('authToken'); // O sessionStorage.removeItem('authToken');
+                
+                // Cambiar a la vista de login
+                document.getElementById('logoutContainer').classList.add('hidden');
+                document.getElementById('loginContainer').classList.remove('hidden');
+                logoutMessage.classList.add('hidden');
+            } else {
+                logoutMessage.textContent = 'Logout failed.';
+                logoutMessage.classList.remove('hidden');
+            }
+        })
+        .catch(() => {
+            logoutMessage.textContent = 'Error connecting to server.';
+            logoutMessage.classList.remove('hidden');
+        });
+    }
+
+    // Al cargar la página, verifica si hay un token
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('authToken'); // O sessionStorage.getItem('authToken');
+        if (token) {
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('logoutContainer').classList.remove('hidden');
+        }
+    });
+    </script>
+</body>
+</html>

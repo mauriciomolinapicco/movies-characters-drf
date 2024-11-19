@@ -12,5 +12,12 @@ urlpatterns = [
     path('updateCharacter/<int:pk>', views.updateCharacter),
 
     path('deleteMovie/<int:pk>', views.deleteMovie),
-    path('deleteCharacter/<int:pk>', views.deleteCharacter)
+    path('deleteCharacter/<int:pk>', views.deleteCharacter),
+
+    path('api/login/', views.LoginView.as_view(), name='api_login'),
+    path('api/logout/', views.LogoutView.as_view(), name='api_logout'),
+
+    path('api/validate-token/', views.validate_token, name='validate-token'),
+
+
 ]
