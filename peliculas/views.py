@@ -5,9 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework import status
 from django.contrib.auth import authenticate
 from .models import Movie, Character
-from .serializers import MovieSerializer, CharacterSerializer
+from .serializers import MovieSerializer, CharacterSerializer, GenreReportSerializer
+from django.db.models import Count
 
 # GET ALL
 @api_view(['GET'])
@@ -122,7 +124,7 @@ class LoginView(APIView):
             token, _ = Token.objects.get_or_create(user=user)
             return Response({"token": token.key}, status=200)
         return Response({"error": "Credenciales invalidas"}, status=401)
-
+ 
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -139,3 +141,12 @@ class LogoutView(APIView):
 @permission_classes([IsAuthenticated])
 def validate_token(request):
     return Response({'detail': 'Token válido'}, status=200)
+
+
+
+#reporte
+class MovieGenreReportView(APIView):
+    def get(self, request):
+        movie_count_by_genre = Movie.objects.values('genre').annotate(count=Count('id')).order_by('genre')
+        serializer = GenreReportSerializer(movie_count_by_genre, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

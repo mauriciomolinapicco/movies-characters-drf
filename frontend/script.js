@@ -286,3 +286,27 @@ function logout() {
         alert('Error al conectar con el servidor');
     });
 }
+
+
+async function fetchGenreReport() {
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/movie-genre-report');
+        const data = await response.json();
+
+        const tableBody = document.getElementById('genreReportTableBody');
+        tableBody.innerHTML = '';  
+
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.genre}</td>
+                <td>${item.count}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error al obtener el reporte de género:', error);
+    }
+}
+
+window.onload = fetchGenreReport;

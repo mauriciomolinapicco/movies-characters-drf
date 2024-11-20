@@ -19,5 +19,5 @@ urlpatterns = [
 
     path('api/validate-token/', views.validate_token, name='validate-token'),
 
-
+    path('api/movie-genre-report/', views.MovieGenreReportView.as_view(), name='movie_genre_report'),
 ]

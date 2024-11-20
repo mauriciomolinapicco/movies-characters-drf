@@ -12,3 +12,8 @@ class CharacterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Character
         fields = ['id', 'name', 'actor', 'role', 'movie', 'movie_title']  # Incluye el campo extra
+
+
+class GenreReportSerializer(serializers.Serializer):
+    genre = serializers.CharField()
+    count = serializers.IntegerField()
